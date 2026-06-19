@@ -1,0 +1,26 @@
+{
+  "name": "alejandro/admin-menu-php",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "Core\\": "src/Core/",
+      "Services\\": "src/Services/",
+      "Modules\\": "src/Modules/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Pedro Alejandro",
+      "email": "alejandroleonpedro7@gmail.com"
+    }
+  ],
+  "require": {
+    "firebase/php-jwt": "^7.0",
+    "vlucas/phpdotenv": "^5.6",
+    "symfony/http-foundation": "^8.1",
+    "doctrine/dbal": "^4.4",
+    "respect/validation": "^3.1",
+    "monolog/monolog": "^3.10",
+    "symfony/routing": "^8.1"
+  }
+}
