@@ -35,10 +35,21 @@ if (isset($result['error'])) {
     exit;
 }
 
-// Call the controller
+// Call the controller with proper argument mapping
 [$controllerClass, $method] = $result['controller'];
 $controller = new $controllerClass();
-$response = $controller->$method($request, ...$result['params']);
+$args = [];
+foreach ((new ReflectionMethod($controllerClass, $method))->getParameters() as $param) {
+    $type = $param->getType();
+    if ($type instanceof ReflectionNamedType && $type->getName() === Request::class) {
+        $args[] = $request;
+    } elseif (array_key_exists($param->getName(), $result['params'])) {
+        $args[] = $result['params'][$param->getName()];
+    } elseif ($param->isDefaultValueAvailable()) {
+        $args[] = $param->getDefaultValue();
+    }
+}
+$response = $controller->$method(...$args);
 
 // Send the response
 $response->send();

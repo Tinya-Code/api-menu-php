@@ -9,11 +9,12 @@ use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Routing\Exception\MethodNotAllowedException;
 use Symfony\Component\HttpFoundation\Request;
 
 class Router
 {
-    private static RouteCollection $routes;
+    private static ?RouteCollection $routes = null;
 
     public static function init(): void
     {
@@ -23,149 +24,51 @@ class Router
 
     private static function registerRoutes(): void
     {
-        // Category routes
-        self::$routes->add('category_index', new Route('/categories', [
-            '_controller' => [Modules\Category\CategoryController::class, 'index']
-        ]));
-        self::$routes->add('category_show', new Route('/categories/{id}', [
-            '_controller' => [Modules\Category\CategoryController::class, 'show']
-        ]));
-        self::$routes->add('category_store', new Route('/categories', [
-            '_controller' => [Modules\Category\CategoryController::class, 'store'],
-            '_methods' => ['POST']
-        ]));
-        self::$routes->add('category_update', new Route('/categories/{id}', [
-            '_controller' => [Modules\Category\CategoryController::class, 'update'],
-            '_methods' => ['PUT', 'PATCH']
-        ]));
-        self::$routes->add('category_destroy', new Route('/categories/{id}', [
-            '_controller' => [Modules\Category\CategoryController::class, 'destroy'],
-            '_methods' => ['DELETE']
-        ]));
+        self::resource('category', '/categories', \Modules\Category\CategoryController::class);
+        self::resource('combo', '/combos', \Modules\Combo\ComboController::class);
+        self::resource('gallery', '/gallery', \Modules\Gallery\GalleryController::class);
+        self::resource('price_range', '/price-ranges', \Modules\PriceRange\PriceRangeController::class);
+        self::resource('product', '/products', \Modules\Product\ProductController::class);
+        self::resource('product_price', '/product-prices', \Modules\ProductPrice\ProductPriceController::class);
+        self::resource('promotion', '/promotions', \Modules\Promotion\PromotionController::class);
+        self::resource('settings', '/settings', \Modules\Settings\SettingsController::class);
+    }
 
-        // Combo routes
-        self::$routes->add('combo_index', new Route('/combos', [
-            '_controller' => [Modules\Combo\ComboController::class, 'index']
-        ]));
-        self::$routes->add('combo_show', new Route('/combos/{id}', [
-            '_controller' => [Modules\Combo\ComboController::class, 'show']
-        ]));
-        self::$routes->add('combo_store', new Route('/combos', [
-            '_controller' => [Modules\Combo\ComboController::class, 'store'],
-            '_methods' => ['POST']
-        ]));
-        self::$routes->add('combo_update', new Route('/combos/{id}', [
-            '_controller' => [Modules\Combo\ComboController::class, 'update'],
-            '_methods' => ['PUT', 'PATCH']
-        ]));
-        self::$routes->add('combo_destroy', new Route('/combos/{id}', [
-            '_controller' => [Modules\Combo\ComboController::class, 'destroy'],
-            '_methods' => ['DELETE']
-        ]));
-
-        // Gallery routes
-        self::$routes->add('gallery_index', new Route('/gallery', [
-            '_controller' => [Modules\Gallery\GalleryController::class, 'index']
-        ]));
-        self::$routes->add('gallery_show', new Route('/gallery/{id}', [
-            '_controller' => [Modules\Gallery\GalleryController::class, 'show']
-        ]));
-        self::$routes->add('gallery_store', new Route('/gallery', [
-            '_controller' => [Modules\Gallery\GalleryController::class, 'store'],
-            '_methods' => ['POST']
-        ]));
-        self::$routes->add('gallery_update', new Route('/gallery/{id}', [
-            '_controller' => [Modules\Gallery\GalleryController::class, 'update'],
-            '_methods' => ['PUT', 'PATCH']
-        ]));
-        self::$routes->add('gallery_destroy', new Route('/gallery/{id}', [
-            '_controller' => [Modules\Gallery\GalleryController::class, 'destroy'],
-            '_methods' => ['DELETE']
-        ]));
-
-        // PriceRange routes
-        self::$routes->add('price_range_index', new Route('/price-ranges', [
-            '_controller' => [Modules\PriceRange\PriceRangeController::class, 'index']
-        ]));
-        self::$routes->add('price_range_show', new Route('/price-ranges/{id}', [
-            '_controller' => [Modules\PriceRange\PriceRangeController::class, 'show']
-        ]));
-        self::$routes->add('price_range_store', new Route('/price-ranges', [
-            '_controller' => [Modules\PriceRange\PriceRangeController::class, 'store'],
-            '_methods' => ['POST']
-        ]));
-        self::$routes->add('price_range_update', new Route('/price-ranges/{id}', [
-            '_controller' => [Modules\PriceRange\PriceRangeController::class, 'update'],
-            '_methods' => ['PUT', 'PATCH']
-        ]));
-        self::$routes->add('price_range_destroy', new Route('/price-ranges/{id}', [
-            '_controller' => [Modules\PriceRange\PriceRangeController::class, 'destroy'],
-            '_methods' => ['DELETE']
-        ]));
-
-        // Product routes
-        self::$routes->add('product_index', new Route('/products', [
-            '_controller' => [Modules\Product\ProductController::class, 'index']
-        ]));
-        self::$routes->add('product_show', new Route('/products/{id}', [
-            '_controller' => [Modules\Product\ProductController::class, 'show']
-        ]));
-        self::$routes->add('product_store', new Route('/products', [
-            '_controller' => [Modules\Product\ProductController::class, 'store'],
-            '_methods' => ['POST']
-        ]));
-        self::$routes->add('product_update', new Route('/products/{id}', [
-            '_controller' => [Modules\Product\ProductController::class, 'update'],
-            '_methods' => ['PUT', 'PATCH']
-        ]));
-        self::$routes->add('product_destroy', new Route('/products/{id}', [
-            '_controller' => [Modules\Product\ProductController::class, 'destroy'],
-            '_methods' => ['DELETE']
-        ]));
-
-        // Promotion routes
-        self::$routes->add('promotion_index', new Route('/promotions', [
-            '_controller' => [Modules\Promotion\PromotionController::class, 'index']
-        ]));
-        self::$routes->add('promotion_show', new Route('/promotions/{id}', [
-            '_controller' => [Modules\Promotion\PromotionController::class, 'show']
-        ]));
-        self::$routes->add('promotion_store', new Route('/promotions', [
-            '_controller' => [Modules\Promotion\PromotionController::class, 'store'],
-            '_methods' => ['POST']
-        ]));
-        self::$routes->add('promotion_update', new Route('/promotions/{id}', [
-            '_controller' => [Modules\Promotion\PromotionController::class, 'update'],
-            '_methods' => ['PUT', 'PATCH']
-        ]));
-        self::$routes->add('promotion_destroy', new Route('/promotions/{id}', [
-            '_controller' => [Modules\Promotion\PromotionController::class, 'destroy'],
-            '_methods' => ['DELETE']
-        ]));
-
-        // Settings routes
-        self::$routes->add('settings_index', new Route('/settings', [
-            '_controller' => [Modules\Settings\SettingsController::class, 'index']
-        ]));
-        self::$routes->add('settings_show', new Route('/settings/{id}', [
-            '_controller' => [Modules\Settings\SettingsController::class, 'show']
-        ]));
-        self::$routes->add('settings_store', new Route('/settings', [
-            '_controller' => [Modules\Settings\SettingsController::class, 'store'],
-            '_methods' => ['POST']
-        ]));
-        self::$routes->add('settings_update', new Route('/settings/{id}', [
-            '_controller' => [Modules\Settings\SettingsController::class, 'update'],
-            '_methods' => ['PUT', 'PATCH']
-        ]));
-        self::$routes->add('settings_destroy', new Route('/settings/{id}', [
-            '_controller' => [Modules\Settings\SettingsController::class, 'destroy'],
-            '_methods' => ['DELETE']
-        ]));
+    private static function resource(string $name, string $uri, string $controller): void
+    {
+        self::$routes->add("{$name}_index", new Route(
+            path: $uri,
+            defaults: ['_controller' => [$controller, 'index']],
+            methods: ['GET'],
+        ));
+        self::$routes->add("{$name}_show", new Route(
+            path: "{$uri}/{id}",
+            defaults: ['_controller' => [$controller, 'show']],
+            methods: ['GET'],
+        ));
+        self::$routes->add("{$name}_store", new Route(
+            path: $uri,
+            defaults: ['_controller' => [$controller, 'store']],
+            methods: ['POST'],
+        ));
+        self::$routes->add("{$name}_update", new Route(
+            path: "{$uri}/{id}",
+            defaults: ['_controller' => [$controller, 'update']],
+            methods: ['PUT', 'PATCH'],
+        ));
+        self::$routes->add("{$name}_destroy", new Route(
+            path: "{$uri}/{id}",
+            defaults: ['_controller' => [$controller, 'destroy']],
+            methods: ['DELETE'],
+        ));
     }
 
     public static function dispatch(Request $request): array
     {
+        if (self::$routes === null) {
+            self::init();
+        }
+
         $context = new RequestContext();
         $context->fromRequest($request);
 
@@ -185,11 +88,20 @@ class Router
                 'error' => 'Route not found',
                 'status' => 404
             ];
+        } catch (MethodNotAllowedException $e) {
+            return [
+                'error' => 'Method not allowed',
+                'status' => 405
+            ];
         }
     }
 
     public static function getRoutes(): RouteCollection
     {
+        if (self::$routes === null) {
+            self::init();
+        }
+
         return self::$routes;
     }
 }
