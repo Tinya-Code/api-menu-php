@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Product;
 
-use Respect\Validation\Validator as v;
+use Respect\Validation\ValidatorBuilder as v;
 
-class RegistrarProductDTO
+class RegisterProductDTO
 {
     private string $name;
     private string $description;
@@ -72,14 +72,14 @@ class RegistrarProductDTO
 
     private function validate(): void
     {
-        v::stringType()->length(1, 255)->assert($this->name);
-        v::stringType()->length(0, 1000)->assert($this->description);
-        v::floatType()->min(0)->assert($this->price);
+        v::stringType()->lengthBetween(1, 255)->assert($this->name);
+        v::stringType()->lengthBetween(0, 1000)->assert($this->description);
+        v::floatType()->greaterThanOrEqual(0)->assert($this->price);
         if ($this->categoryId !== null) {
-            v::intType()->min(1)->assert($this->categoryId);
+            v::intType()->greaterThanOrEqual(1)->assert($this->categoryId);
         }
         if ($this->priceRangeId !== null) {
-            v::intType()->min(1)->assert($this->priceRangeId);
+            v::intType()->greaterThanOrEqual(1)->assert($this->priceRangeId);
         }
         if ($this->imageUrl !== null) {
             v::url()->assert($this->imageUrl);
