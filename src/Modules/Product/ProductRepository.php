@@ -68,7 +68,7 @@ class ProductRepository
         );
     }
 
-    public function create(RegistrarProductDTO $dto): ProductEntity
+    public function create(RegisterProductDTO $dto): ProductEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
         
@@ -100,7 +100,7 @@ class ProductRepository
         );
     }
 
-    public function update(int $id, RegistrarProductDTO $dto): ?ProductEntity
+    public function update(int $id, RegisterProductDTO $dto): ?ProductEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
         

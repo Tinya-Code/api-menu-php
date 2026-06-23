@@ -38,7 +38,7 @@ class ProductController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            $dto = new RegistrarProductDTO(
+            $dto = new RegisterProductDTO(
                 $data['name'],
                 $data['description'],
                 (float) $data['price'],
@@ -59,7 +59,7 @@ class ProductController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            $dto = new RegistrarProductDTO(
+            $dto = new RegisterProductDTO(
                 $data['name'],
                 $data['description'],
                 (float) $data['price'],

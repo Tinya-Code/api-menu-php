@@ -14,6 +14,22 @@ use Symfony\Component\HttpFoundation\Request;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
+// CORS — lista de orígenes permitidos desde .env
+$allowedOrigins = array_map('trim', explode(',', $_ENV['CORS_ALLOWED_ORIGINS'] ?? ''));
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: $origin");
+    header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+}
+
+// Handle preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 // Initialize database connection
 Database::getConnection();
 
@@ -35,10 +51,21 @@ if (isset($result['error'])) {
     exit;
 }
 
-// Call the controller
+// Call the controller with proper argument mapping
 [$controllerClass, $method] = $result['controller'];
 $controller = new $controllerClass();
-$response = $controller->$method($request, ...$result['params']);
+$args = [];
+foreach ((new ReflectionMethod($controllerClass, $method))->getParameters() as $param) {
+    $type = $param->getType();
+    if ($type instanceof ReflectionNamedType && $type->getName() === Request::class) {
+        $args[] = $request;
+    } elseif (array_key_exists($param->getName(), $result['params'])) {
+        $args[] = $result['params'][$param->getName()];
+    } elseif ($param->isDefaultValueAvailable()) {
+        $args[] = $param->getDefaultValue();
+    }
+}
+$response = $controller->$method(...$args);
 
 // Send the response
 $response->send();

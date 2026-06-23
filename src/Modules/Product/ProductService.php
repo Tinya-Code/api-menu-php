@@ -23,12 +23,12 @@ class ProductService
         return $this->repository->findById($id);
     }
 
-    public function create(RegistrarProductDTO $dto): ProductEntity
+    public function create(RegisterProductDTO $dto): ProductEntity
     {
         return $this->repository->create($dto);
     }
 
-    public function update(int $id, RegistrarProductDTO $dto): ?ProductEntity
+    public function update(int $id, RegisterProductDTO $dto): ?ProductEntity
     {
         return $this->repository->update($id, $dto);
     }
