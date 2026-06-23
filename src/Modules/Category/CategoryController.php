@@ -23,10 +23,10 @@ class CategoryController
         return new JsonResponse(['data' => $data]);
     }
 
-    public function show(int $id): JsonResponse
+    public function show(string $id): JsonResponse
     {
         $category = $this->service->getById($id);
-        
+
         if ($category === null) {
             return new JsonResponse(['error' => 'Category not found'], 404);
         }
@@ -38,11 +38,13 @@ class CategoryController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            $dto = new RegistrarCategoryDTO(
+            $dto = new RegisterCategoryDTO(
                 $data['name'],
-                $data['description']
+                $data['description'],
+                $data['block_id'],
+                (int) ($data['sort_order'] ?? 0)
             );
-            
+
             $category = $this->service->create($dto);
             return new JsonResponse(['data' => $category->toArray()], 201);
         } catch (\Exception $e) {
@@ -50,17 +52,19 @@ class CategoryController
         }
     }
 
-    public function update(int $id, Request $request): JsonResponse
+    public function update(string $id, Request $request): JsonResponse
     {
         try {
             $data = json_decode($request->getContent(), true);
-            $dto = new RegistrarCategoryDTO(
+            $dto = new RegisterCategoryDTO(
                 $data['name'],
-                $data['description']
+                $data['description'],
+                $data['block_id'],
+                (int) ($data['sort_order'] ?? 0)
             );
-            
+
             $category = $this->service->update($id, $dto);
-            
+
             if ($category === null) {
                 return new JsonResponse(['error' => 'Category not found'], 404);
             }
@@ -71,10 +75,10 @@ class CategoryController
         }
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
         $deleted = $this->service->delete($id);
-        
+
         if (!$deleted) {
             return new JsonResponse(['error' => 'Category not found'], 404);
         }
