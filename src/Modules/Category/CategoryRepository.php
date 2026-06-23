@@ -6,6 +6,7 @@ namespace Modules\Category;
 
 use Core\Database;
 use Doctrine\DBAL\Connection;
+use Ramsey\Uuid\Uuid;
 
 class CategoryRepository
 {
@@ -22,19 +23,22 @@ class CategoryRepository
         $result = $qb
             ->select('*')
             ->from('categories')
+            ->orderBy('sort_order', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
 
         return array_map(fn($row) => new CategoryEntity(
             $row['name'],
             $row['description'],
-            (int) $row['id'],
+            $row['block_id'],
+            (int) $row['sort_order'],
+            $row['id'],
             $row['created_at'],
             $row['updated_at']
         ), $result);
     }
 
-    public function findById(int $id): ?CategoryEntity
+    public function findById(string $id): ?CategoryEntity
     {
         $qb = $this->db->createQueryBuilder();
         $result = $qb
@@ -52,41 +56,49 @@ class CategoryRepository
         return new CategoryEntity(
             $result['name'],
             $result['description'],
-            (int) $result['id'],
+            $result['block_id'],
+            (int) $result['sort_order'],
+            $result['id'],
             $result['created_at'],
             $result['updated_at']
         );
     }
 
-    public function create(RegistrarCategoryDTO $dto): CategoryEntity
+    public function create(RegisterCategoryDTO $dto): CategoryEntity
     {
+        $id = Uuid::uuid4()->toString();
         $now = (new \DateTime())->format('Y-m-d H:i:s');
-        
+
         $this->db->insert('categories', [
+            'id' => $id,
             'name' => $dto->getName(),
             'description' => $dto->getDescription(),
+            'block_id' => $dto->getBlockId(),
+            'sort_order' => $dto->getSortOrder(),
             'created_at' => $now,
             'updated_at' => $now
         ]);
 
-        $id = (int) $this->db->lastInsertId();
-
         return new CategoryEntity(
             $dto->getName(),
             $dto->getDescription(),
+            $dto->getBlockId(),
+            $dto->getSortOrder(),
             $id,
             $now,
             $now
         );
     }
 
-    public function update(int $id, RegistrarCategoryDTO $dto): ?CategoryEntity
+    public function update(string $id, RegisterCategoryDTO $dto): ?CategoryEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
-        
+
         $affectedRows = $this->db->update('categories', [
             'name' => $dto->getName(),
             'description' => $dto->getDescription(),
+            'block_id' => $dto->getBlockId(),
+            'sort_order' => $dto->getSortOrder(),
             'updated_at' => $now
         ], ['id' => $id]);
 
@@ -97,7 +109,7 @@ class CategoryRepository
         return $this->findById($id);
     }
 
-    public function delete(int $id): bool
+    public function delete(string $id): bool
     {
         $affectedRows = $this->db->delete('categories', ['id' => $id]);
         return $affectedRows > 0;

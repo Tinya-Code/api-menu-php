@@ -18,22 +18,22 @@ class CategoryService
         return $this->repository->findAll();
     }
 
-    public function getById(int $id): ?CategoryEntity
+    public function getById(string $id): ?CategoryEntity
     {
         return $this->repository->findById($id);
     }
 
-    public function create(RegistrarCategoryDTO $dto): CategoryEntity
+    public function create(RegisterCategoryDTO $dto): CategoryEntity
     {
         return $this->repository->create($dto);
     }
 
-    public function update(int $id, RegistrarCategoryDTO $dto): ?CategoryEntity
+    public function update(string $id, RegisterCategoryDTO $dto): ?CategoryEntity
     {
         return $this->repository->update($id, $dto);
     }
 
-    public function delete(int $id): bool
+    public function delete(string $id): bool
     {
         return $this->repository->delete($id);
     }

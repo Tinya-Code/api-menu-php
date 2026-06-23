@@ -60,7 +60,16 @@ foreach ((new ReflectionMethod($controllerClass, $method))->getParameters() as $
     if ($type instanceof ReflectionNamedType && $type->getName() === Request::class) {
         $args[] = $request;
     } elseif (array_key_exists($param->getName(), $result['params'])) {
-        $args[] = $result['params'][$param->getName()];
+        $value = $result['params'][$param->getName()];
+        if ($type instanceof ReflectionNamedType) {
+            $typeName = $type->getName();
+            if ($typeName === 'int') {
+                $value = (int) $value;
+            } elseif ($typeName === 'float') {
+                $value = (float) $value;
+            }
+        }
+        $args[] = $value;
     } elseif ($param->isDefaultValueAvailable()) {
         $args[] = $param->getDefaultValue();
     }

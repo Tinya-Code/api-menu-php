@@ -6,27 +6,33 @@ namespace Modules\Category;
 
 class CategoryEntity
 {
-    private ?int $id;
+    private ?string $id;
     private string $name;
     private string $description;
+    private string $blockId;
+    private int $sortOrder;
     private ?string $createdAt;
     private ?string $updatedAt;
 
     public function __construct(
         string $name,
         string $description,
-        ?int $id = null,
+        string $blockId,
+        int $sortOrder = 0,
+        ?string $id = null,
         ?string $createdAt = null,
         ?string $updatedAt = null
     ) {
         $this->id = $id;
         $this->name = $name;
         $this->description = $description;
+        $this->blockId = $blockId;
+        $this->sortOrder = $sortOrder;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -51,6 +57,26 @@ class CategoryEntity
         $this->description = $description;
     }
 
+    public function getBlockId(): string
+    {
+        return $this->blockId;
+    }
+
+    public function setBlockId(string $blockId): void
+    {
+        $this->blockId = $blockId;
+    }
+
+    public function getSortOrder(): int
+    {
+        return $this->sortOrder;
+    }
+
+    public function setSortOrder(int $sortOrder): void
+    {
+        $this->sortOrder = $sortOrder;
+    }
+
     public function getCreatedAt(): ?string
     {
         return $this->createdAt;
@@ -67,6 +93,8 @@ class CategoryEntity
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'block_id' => $this->blockId,
+            'sort_order' => $this->sortOrder,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt
         ];
