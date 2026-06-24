@@ -10,6 +10,7 @@ class RegisterProductPriceDTO
 {
     private string $productId;
     private float $price;
+    private ?string $description;
     private string $ruleType;
     private ?int $startDay;
     private ?int $endDay;
@@ -20,6 +21,7 @@ class RegisterProductPriceDTO
         string $productId,
         float $price,
         string $ruleType,
+        ?string $description = null,
         ?int $startDay = null,
         ?int $endDay = null,
         ?string $startDatetime = null,
@@ -28,6 +30,7 @@ class RegisterProductPriceDTO
         $this->productId = $productId;
         $this->price = $price;
         $this->ruleType = $ruleType;
+        $this->description = $description;
         $this->startDay = $startDay;
         $this->endDay = $endDay;
         $this->startDatetime = $startDatetime;
@@ -43,6 +46,11 @@ class RegisterProductPriceDTO
     public function getPrice(): float
     {
         return $this->price;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->description;
     }
 
     public function getRuleType(): string
@@ -118,6 +126,7 @@ class RegisterProductPriceDTO
         return [
             'product_id' => $this->productId,
             'price' => $this->price,
+            'description' => $this->description,
             'rule_type' => $this->ruleType,
             'start_day' => $this->startDay,
             'end_day' => $this->endDay,
