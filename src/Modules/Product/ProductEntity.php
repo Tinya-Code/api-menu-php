@@ -10,24 +10,26 @@ class ProductEntity
     private string $name;
     private string $description;
     private float $price;
-    private ?int $categoryId;
+    private ?string $categoryId;
     private ?int $priceRangeId;
     private ?string $imageUrl;
     private bool $isActive;
     private ?string $createdAt;
     private ?string $updatedAt;
+    private array $prices;
 
     public function __construct(
         string $name,
         string $description,
         float $price,
-        ?int $categoryId = null,
+        ?string $categoryId = null,
         ?int $priceRangeId = null,
         ?string $imageUrl = null,
         bool $isActive = true,
         ?int $id = null,
         ?string $createdAt = null,
-        ?string $updatedAt = null
+        ?string $updatedAt = null,
+        array $prices = []
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -39,6 +41,7 @@ class ProductEntity
         $this->isActive = $isActive;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
+        $this->prices = $prices;
     }
 
     public function getId(): ?int
@@ -76,12 +79,12 @@ class ProductEntity
         $this->price = $price;
     }
 
-    public function getCategoryId(): ?int
+    public function getCategoryId(): ?string
     {
         return $this->categoryId;
     }
 
-    public function setCategoryId(?int $categoryId): void
+    public function setCategoryId(?string $categoryId): void
     {
         $this->categoryId = $categoryId;
     }
@@ -116,6 +119,16 @@ class ProductEntity
         $this->isActive = $isActive;
     }
 
+    public function getPrices(): array
+    {
+        return $this->prices;
+    }
+
+    public function setPrices(array $prices): void
+    {
+        $this->prices = $prices;
+    }
+
     public function getCreatedAt(): ?string
     {
         return $this->createdAt;
@@ -138,7 +151,8 @@ class ProductEntity
             'image_url' => $this->imageUrl,
             'is_active' => $this->isActive,
             'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt
+            'updated_at' => $this->updatedAt,
+            'prices' => array_map(fn($p) => $p instanceof \Modules\ProductPrice\ProductPriceEntity ? $p->toArray() : $p, $this->prices)
         ];
     }
 }

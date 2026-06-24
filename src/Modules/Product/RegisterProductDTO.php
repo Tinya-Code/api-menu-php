@@ -11,7 +11,7 @@ class RegisterProductDTO
     private string $name;
     private string $description;
     private float $price;
-    private ?int $categoryId;
+    private ?string $categoryId;
     private ?int $priceRangeId;
     private ?string $imageUrl;
     private bool $isActive;
@@ -20,7 +20,7 @@ class RegisterProductDTO
         string $name,
         string $description,
         float $price,
-        ?int $categoryId = null,
+        ?string $categoryId = null,
         ?int $priceRangeId = null,
         ?string $imageUrl = null,
         bool $isActive = true
@@ -50,7 +50,7 @@ class RegisterProductDTO
         return $this->price;
     }
 
-    public function getCategoryId(): ?int
+    public function getCategoryId(): ?string
     {
         return $this->categoryId;
     }
@@ -76,7 +76,7 @@ class RegisterProductDTO
         v::stringType()->lengthBetween(0, 1000)->assert($this->description);
         v::floatType()->greaterThanOrEqual(0)->assert($this->price);
         if ($this->categoryId !== null) {
-            v::intType()->greaterThanOrEqual(1)->assert($this->categoryId);
+            v::stringType()->lengthBetween(1, 36)->assert($this->categoryId);
         }
         if ($this->priceRangeId !== null) {
             v::intType()->greaterThanOrEqual(1)->assert($this->priceRangeId);

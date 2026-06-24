@@ -9,6 +9,7 @@ class ProductPriceEntity
     private ?string $id;
     private string $productId;
     private float $price;
+    private ?string $description;
     private ?int $startDay;
     private ?int $endDay;
     private ?string $startDatetime;
@@ -19,6 +20,7 @@ class ProductPriceEntity
         string $productId,
         float $price,
         string $ruleType,
+        ?string $description = null,
         ?int $startDay = null,
         ?int $endDay = null,
         ?string $startDatetime = null,
@@ -29,6 +31,7 @@ class ProductPriceEntity
         $this->productId = $productId;
         $this->price = $price;
         $this->ruleType = $ruleType;
+        $this->description = $description;
         $this->startDay = $startDay;
         $this->endDay = $endDay;
         $this->startDatetime = $startDatetime;
@@ -95,6 +98,11 @@ class ProductPriceEntity
         $this->endDatetime = $endDatetime;
     }
 
+    public function getName(): ?string
+    {
+        return $this->description;
+    }
+
     public function getRuleType(): string
     {
         return $this->ruleType;
@@ -111,6 +119,7 @@ class ProductPriceEntity
             'id' => $this->id,
             'product_id' => $this->productId,
             'price' => $this->price,
+            'description' => $this->description,
             'start_day' => $this->startDay,
             'end_day' => $this->endDay,
             'start_datetime' => $this->startDatetime,

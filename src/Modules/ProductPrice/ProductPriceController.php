@@ -40,18 +40,19 @@ class ProductPriceController
         try {
             $data = json_decode($request->getContent(), true);
             $dto = new RegisterProductPriceDTO(
-                $data['product_id'],
+                (string) $data['product_id'],
                 (float) $data['price'],
                 $data['rule_type'],
-                $data['start_day'] ?? null,
-                $data['end_day'] ?? null,
+                $data['description'] ?? null,
+                isset($data['start_day']) ? (int) $data['start_day'] : null,
+                isset($data['end_day']) ? (int) $data['end_day'] : null,
                 $data['start_datetime'] ?? null,
                 $data['end_datetime'] ?? null
             );
 
             $price = $this->service->create($dto);
             return new JsonResponse(['data' => $price->toArray()], 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
     }
@@ -61,11 +62,12 @@ class ProductPriceController
         try {
             $data = json_decode($request->getContent(), true);
             $dto = new RegisterProductPriceDTO(
-                $data['product_id'],
+                (string) $data['product_id'],
                 (float) $data['price'],
                 $data['rule_type'],
-                $data['start_day'] ?? null,
-                $data['end_day'] ?? null,
+                $data['description'] ?? null,
+                isset($data['start_day']) ? (int) $data['start_day'] : null,
+                isset($data['end_day']) ? (int) $data['end_day'] : null,
                 $data['start_datetime'] ?? null,
                 $data['end_datetime'] ?? null
             );
@@ -77,7 +79,7 @@ class ProductPriceController
             }
 
             return new JsonResponse(['data' => $price->toArray()]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
     }

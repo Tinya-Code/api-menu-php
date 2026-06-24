@@ -36,6 +36,7 @@ CREATE TABLE product_prices (
     id CHAR(36) PRIMARY KEY,
     product_id VARCHAR(36) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
+    description VARCHAR(255),
     start_day INT,
     end_day INT,
     start_datetime DATETIME,
