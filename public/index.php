@@ -16,13 +16,16 @@ $dotenv->load();
 
 // CORS — lista de orígenes permitidos desde .env
 $allowedOrigins = array_map('trim', explode(',', $_ENV['CORS_ALLOWED_ORIGINS'] ?? ''));
+
+// Si no hay Origin (Thunder Client/Postman) o si coincide con la lista, permitir
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-if (in_array($origin, $allowedOrigins, true)) {
-    header("Access-Control-Allow-Origin: $origin");
+if ($origin === '' || in_array($origin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: " . ($origin ?: '*'));
     header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, Authorization');
 }
+
 
 // Handle preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

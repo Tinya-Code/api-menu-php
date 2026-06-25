@@ -8,6 +8,9 @@
       "Modules\\": "src/Modules/"
     }
   },
+    "scripts": {
+    "dev": "php -S localhost:8000 -t public"
+  },
   "authors": [
     {
       "name": "Pedro Alejandro",
