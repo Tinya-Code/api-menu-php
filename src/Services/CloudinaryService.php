@@ -53,9 +53,10 @@ class CloudinaryService
      * Sube una imagen a Cloudinary convertida a WebP.
      *
      * @param array $file Datos del archivo (tmp_name, name, size, error, type)
+     * @param string $folder Carpeta en Cloudinary donde guardar (default 'menu')
      * @return array{url: string, public_id: string}
      */
-    public function upload(array $file): array
+    public function upload(array $file, string $folder = 'menu'): array
     {
         if (!$this->enabled) {
             throw new \RuntimeException('Cloudinary is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in .env');
@@ -65,7 +66,7 @@ class CloudinaryService
 
         try {
             $result = $this->uploadApi->upload($file['tmp_name'], [
-                'folder'          => 'productos',
+                'folder'          => $folder,
                 'format'          => 'webp',
                 'resource_type'   => 'image',
                 'quality'         => 'auto',
@@ -92,11 +93,12 @@ class CloudinaryService
      *
      * @param array $file Datos del nuevo archivo
      * @param string|null $oldPublicId public_id de la imagen anterior
+     * @param string $folder Carpeta en Cloudinary (default 'menu')
      * @return array{url: string, public_id: string}
      */
-    public function replace(array $file, ?string $oldPublicId): array
+    public function replace(array $file, ?string $oldPublicId, string $folder = 'menu'): array
     {
-        $newImage = $this->upload($file);
+        $newImage = $this->upload($file, $folder);
 
         if ($oldPublicId !== null && $oldPublicId !== '') {
             try {

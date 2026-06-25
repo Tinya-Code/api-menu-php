@@ -13,33 +13,13 @@ class SettingsService
         $this->repository = new SettingsRepository();
     }
 
-    public function getAll(): array
+    public function get(): ?SettingsEntity
     {
-        return $this->repository->findAll();
+        return $this->repository->find();
     }
 
-    public function getById(int $id): ?SettingsEntity
+    public function save(RegisterSettingsDTO $dto): SettingsEntity
     {
-        return $this->repository->findById($id);
-    }
-
-    public function getByKey(string $key): ?SettingsEntity
-    {
-        return $this->repository->findByKey($key);
-    }
-
-    public function create(RegistrarSettingsDTO $dto): SettingsEntity
-    {
-        return $this->repository->create($dto);
-    }
-
-    public function update(int $id, RegistrarSettingsDTO $dto): ?SettingsEntity
-    {
-        return $this->repository->update($id, $dto);
-    }
-
-    public function delete(int $id): bool
-    {
-        return $this->repository->delete($id);
+        return $this->repository->save($dto);
     }
 }
