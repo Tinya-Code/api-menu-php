@@ -21,6 +21,8 @@
     "doctrine/dbal": "^4.4",
     "respect/validation": "^3.1",
     "monolog/monolog": "^3.10",
-    "symfony/routing": "^8.1"
+    "symfony/routing": "^8.1",
+    "ramsey/uuid": "^4.9",
+    "cloudinary/cloudinary_php": "3.1"
   }
 }

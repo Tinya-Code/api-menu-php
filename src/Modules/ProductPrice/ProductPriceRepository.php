@@ -36,6 +36,7 @@ class ProductPriceRepository
             $row['product_id'],
             (float) $row['price'],
             $row['rule_type'],
+            $row['description'] ?? null,
             $row['start_day'] !== null ? (int) $row['start_day'] : null,
             $row['end_day'] !== null ? (int) $row['end_day'] : null,
             $row['start_datetime'],
@@ -63,6 +64,7 @@ class ProductPriceRepository
             $result['product_id'],
             (float) $result['price'],
             $result['rule_type'],
+            $result['description'] ?? null,
             $result['start_day'] !== null ? (int) $result['start_day'] : null,
             $result['end_day'] !== null ? (int) $result['end_day'] : null,
             $result['start_datetime'],
@@ -79,6 +81,7 @@ class ProductPriceRepository
             'id' => $id,
             'product_id' => $dto->getProductId(),
             'price' => $dto->getPrice(),
+            'description' => $dto->getName(),
             'start_day' => $dto->getStartDay(),
             'end_day' => $dto->getEndDay(),
             'start_datetime' => $dto->getStartDatetime(),
@@ -90,6 +93,7 @@ class ProductPriceRepository
             $dto->getProductId(),
             $dto->getPrice(),
             $dto->getRuleType(),
+            $dto->getName(),
             $dto->getStartDay(),
             $dto->getEndDay(),
             $dto->getStartDatetime(),
@@ -103,6 +107,7 @@ class ProductPriceRepository
         $affectedRows = $this->db->update('product_prices', [
             'product_id' => $dto->getProductId(),
             'price' => $dto->getPrice(),
+            'description' => $dto->getName(),
             'start_day' => $dto->getStartDay(),
             'end_day' => $dto->getEndDay(),
             'start_datetime' => $dto->getStartDatetime(),
@@ -115,6 +120,11 @@ class ProductPriceRepository
         }
 
         return $this->findById($id);
+    }
+
+    public function deleteByProductId(string $productId): void
+    {
+        $this->db->delete('product_prices', ['product_id' => $productId]);
     }
 
     public function delete(string $id): bool
