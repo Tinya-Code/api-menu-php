@@ -16,33 +16,15 @@ class SettingsRepository
         $this->db = Database::getConnection();
     }
 
-    public function findAll(): array
+    public function find(): ?SettingsEntity
     {
+        $this->ensureTableExists();
+
         $qb = $this->db->createQueryBuilder();
         $result = $qb
             ->select('*')
-            ->from('settings')
-            ->executeQuery()
-            ->fetchAllAssociative();
-
-        return array_map(fn($row) => new SettingsEntity(
-            $row['key'],
-            $row['value'],
-            $row['description'],
-            (int) $row['id'],
-            $row['created_at'],
-            $row['updated_at']
-        ), $result);
-    }
-
-    public function findById(int $id): ?SettingsEntity
-    {
-        $qb = $this->db->createQueryBuilder();
-        $result = $qb
-            ->select('*')
-            ->from('settings')
-            ->where('id = :id')
-            ->setParameter('id', $id)
+            ->from('restaurant_settings')
+            ->where('id = 1')
             ->executeQuery()
             ->fetchAssociative();
 
@@ -50,86 +32,63 @@ class SettingsRepository
             return null;
         }
 
+        $data = json_decode($result['data'], true);
+
         return new SettingsEntity(
-            $result['key'],
-            $result['value'],
-            $result['description'],
+            $data['restaurant'] ?? [],
+            $data['settings'] ?? [],
             (int) $result['id'],
             $result['created_at'],
             $result['updated_at']
         );
     }
 
-    public function findByKey(string $key): ?SettingsEntity
+    public function save(RegisterSettingsDTO $dto): SettingsEntity
     {
-        $qb = $this->db->createQueryBuilder();
-        $result = $qb
-            ->select('*')
-            ->from('settings')
-            ->where('`key` = :key')
-            ->setParameter('key', $key)
-            ->executeQuery()
-            ->fetchAssociative();
+        $this->ensureTableExists();
 
-        if ($result === false) {
-            return null;
-        }
-
-        return new SettingsEntity(
-            $result['key'],
-            $result['value'],
-            $result['description'],
-            (int) $result['id'],
-            $result['created_at'],
-            $result['updated_at']
-        );
-    }
-
-    public function create(RegistrarSettingsDTO $dto): SettingsEntity
-    {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
-        
-        $this->db->insert('settings', [
-            'key' => $dto->getKey(),
-            'value' => $dto->getValue(),
-            'description' => $dto->getDescription(),
-            'created_at' => $now,
-            'updated_at' => $now
-        ]);
+        $data = json_encode($dto->toArray());
 
-        $id = (int) $this->db->lastInsertId();
+        $existing = $this->db->createQueryBuilder()
+            ->select('id')
+            ->from('restaurant_settings')
+            ->where('id = 1')
+            ->executeQuery()
+            ->fetchOne();
+
+        if ($existing === false) {
+            $this->db->insert('restaurant_settings', [
+                'id' => 1,
+                'data' => $data,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        } else {
+            $this->db->update('restaurant_settings', [
+                'data' => $data,
+                'updated_at' => $now,
+            ], ['id' => 1]);
+        }
 
         return new SettingsEntity(
-            $dto->getKey(),
-            $dto->getValue(),
-            $dto->getDescription(),
-            $id,
+            $dto->getRestaurant(),
+            $dto->getSettings(),
+            1,
             $now,
             $now
         );
     }
 
-    public function update(int $id, RegistrarSettingsDTO $dto): ?SettingsEntity
+    private function ensureTableExists(): void
     {
-        $now = (new \DateTime())->format('Y-m-d H:i:s');
-        
-        $affectedRows = $this->db->update('settings', [
-            'key' => $dto->getKey(),
-            'value' => $dto->getValue(),
-            'description' => $dto->getDescription(),
-            'updated_at' => $now
-        ], ['id' => $id]);
-
-        if ($affectedRows === 0) {
-            return null;
-        }
-
-        return $this->findById($id);
-    }
-
-    public function delete(int $id): bool
-    {
-        $affectedRows = $this->db->delete('settings', ['id' => $id]);
-        return $affectedRows > 0;
+        $this->db->executeStatement('
+            CREATE TABLE IF NOT EXISTS restaurant_settings (
+                id INT PRIMARY KEY DEFAULT 1,
+                data JSON NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            )
+        ');
     }
 }

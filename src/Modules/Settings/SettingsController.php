@@ -4,83 +4,84 @@ declare(strict_types=1);
 
 namespace Modules\Settings;
 
+use Services\CloudinaryService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class SettingsController
 {
     private SettingsService $service;
+    private CloudinaryService $cloudinary;
 
     public function __construct()
     {
         $this->service = new SettingsService();
+        $this->cloudinary = new CloudinaryService();
     }
 
     public function index(): JsonResponse
     {
-        $settings = $this->service->getAll();
-        $data = array_map(fn($setting) => $setting->toArray(), $settings);
-        return new JsonResponse(['data' => $data]);
-    }
+        $settings = $this->service->get();
 
-    public function show(int $id): JsonResponse
-    {
-        $setting = $this->service->getById($id);
-        
-        if ($setting === null) {
-            return new JsonResponse(['error' => 'Setting not found'], 404);
+        if ($settings === null) {
+            $default = new SettingsEntity([], []);
+            return new JsonResponse($default->toArray());
         }
 
-        return new JsonResponse(['data' => $setting->toArray()]);
+        return new JsonResponse($settings->toArray());
     }
 
     public function store(Request $request): JsonResponse
     {
         try {
-            $data = json_decode($request->getContent(), true);
-            $dto = new RegistrarSettingsDTO(
-                $data['key'],
-                $data['value'],
-                $data['description'] ?? null
-            );
-            
-            $setting = $this->service->create($dto);
-            return new JsonResponse(['data' => $setting->toArray()], 201);
-        } catch (\Exception $e) {
+            $data = $this->getRequestData($request);
+
+            $file = $request->files->get('logo');
+
+            if ($file !== null) {
+                $uploaded = $this->cloudinary->upload([
+                    'tmp_name' => $file->getPathname(),
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'error' => $file->getError(),
+                    'type' => $file->getClientMimeType(),
+                ], 'settings');
+
+                $data['settings']['logo_url'] = $uploaded['url'];
+            }
+
+            $dto = new RegisterSettingsDTO($data);
+            $settings = $this->service->save($dto);
+
+            return new JsonResponse($settings->toArray());
+        } catch (\Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function update(int $id, Request $request): JsonResponse
+    public function show(int $id): JsonResponse
     {
-        try {
-            $data = json_decode($request->getContent(), true);
-            $dto = new RegistrarSettingsDTO(
-                $data['key'],
-                $data['value'],
-                $data['description'] ?? null
-            );
-            
-            $setting = $this->service->update($id, $dto);
-            
-            if ($setting === null) {
-                return new JsonResponse(['error' => 'Setting not found'], 404);
-            }
+        return new JsonResponse(['error' => 'Not supported. Use GET /settings'], 404);
+    }
 
-            return new JsonResponse(['data' => $setting->toArray()]);
-        } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 400);
-        }
+    public function update(Request $request): JsonResponse
+    {
+        return new JsonResponse(['error' => 'Not supported. Use PUT /settings'], 404);
     }
 
     public function destroy(int $id): JsonResponse
     {
-        $deleted = $this->service->delete($id);
-        
-        if (!$deleted) {
-            return new JsonResponse(['error' => 'Setting not found'], 404);
+        return new JsonResponse(['error' => 'Not supported'], 404);
+    }
+
+    private function getRequestData(Request $request): array
+    {
+        $content = $request->getContent();
+
+        if (!empty($content)) {
+            return json_decode($content, true) ?? [];
         }
 
-        return new JsonResponse(['message' => 'Setting deleted successfully']);
+        return $request->request->all();
     }
 }

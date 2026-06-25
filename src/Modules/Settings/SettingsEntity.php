@@ -7,24 +7,23 @@ namespace Modules\Settings;
 class SettingsEntity
 {
     private ?int $id;
-    private string $key;
-    private string $value;
-    private ?string $description;
+
+    private array $restaurant;
+    private array $settings;
+
     private ?string $createdAt;
     private ?string $updatedAt;
 
     public function __construct(
-        string $key,
-        string $value,
-        ?string $description = null,
+        array $restaurant,
+        array $settings,
         ?int $id = null,
         ?string $createdAt = null,
         ?string $updatedAt = null
     ) {
         $this->id = $id;
-        $this->key = $key;
-        $this->value = $value;
-        $this->description = $description;
+        $this->restaurant = $restaurant;
+        $this->settings = $settings;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -34,34 +33,24 @@ class SettingsEntity
         return $this->id;
     }
 
-    public function getKey(): string
+    public function getRestaurant(): array
     {
-        return $this->key;
+        return $this->restaurant;
     }
 
-    public function setKey(string $key): void
+    public function setRestaurant(array $restaurant): void
     {
-        $this->key = $key;
+        $this->restaurant = $restaurant;
     }
 
-    public function getValue(): string
+    public function getSettings(): array
     {
-        return $this->value;
+        return $this->settings;
     }
 
-    public function setValue(string $value): void
+    public function setSettings(array $settings): void
     {
-        $this->value = $value;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): void
-    {
-        $this->description = $description;
+        $this->settings = $settings;
     }
 
     public function getCreatedAt(): ?string
@@ -77,12 +66,10 @@ class SettingsEntity
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'key' => $this->key,
-            'value' => $this->value,
-            'description' => $this->description,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt
+            'data' => [
+                'restaurant' => $this->restaurant,
+                'settings' => $this->settings,
+            ],
         ];
     }
 }
