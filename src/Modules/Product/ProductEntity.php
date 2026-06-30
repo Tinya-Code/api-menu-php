@@ -17,6 +17,7 @@ class ProductEntity
     private ?string $createdAt;
     private ?string $updatedAt;
     private array $prices;
+    private array $priceRanges;
 
     public function __construct(
         string $name,
@@ -29,7 +30,8 @@ class ProductEntity
         ?int $id = null,
         ?string $createdAt = null,
         ?string $updatedAt = null,
-        array $prices = []
+        array $prices = [],
+        array $priceRanges = []
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -42,6 +44,7 @@ class ProductEntity
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
         $this->prices = $prices;
+        $this->priceRanges = $priceRanges;
     }
 
     public function getId(): ?int
@@ -129,6 +132,16 @@ class ProductEntity
         $this->prices = $prices;
     }
 
+    public function getPriceRanges(): array
+    {
+        return $this->priceRanges;
+    }
+
+    public function setPriceRanges(array $priceRanges): void
+    {
+        $this->priceRanges = $priceRanges;
+    }
+
     public function getCreatedAt(): ?string
     {
         return $this->createdAt;
@@ -152,7 +165,8 @@ class ProductEntity
             'is_active' => $this->isActive,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt,
-            'prices' => array_map(fn($p) => $p instanceof \Modules\ProductPrice\ProductPriceEntity ? $p->toArray() : $p, $this->prices)
+            'prices' => array_map(fn($p) => $p instanceof \Modules\ProductPrice\ProductPriceEntity ? $p->toArray() : $p, $this->prices),
+            'price_ranges' => array_map(fn($pr) => $pr instanceof \Modules\PriceRange\PriceRangeEntity ? $pr->toArray() : $pr, $this->priceRanges)
         ];
     }
 }

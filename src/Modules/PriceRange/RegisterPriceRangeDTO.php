@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\PriceRange;
 
-class PriceRangeEntity
+use Respect\Validation\ValidatorBuilder as v;
+
+class RegisterPriceRangeDTO
 {
-    private ?int $id;
     private int $productId;
     private float $quantity;
     private ?string $unit;
@@ -14,8 +15,6 @@ class PriceRangeEntity
     private ?string $bonus;
     private int $sortOrder;
     private bool $isDefault;
-    private ?string $createdAt;
-    private ?string $updatedAt;
 
     public function __construct(
         int $productId,
@@ -24,12 +23,8 @@ class PriceRangeEntity
         ?string $unit = null,
         ?string $bonus = null,
         int $sortOrder = 0,
-        bool $isDefault = false,
-        ?int $id = null,
-        ?string $createdAt = null,
-        ?string $updatedAt = null
+        bool $isDefault = false
     ) {
-        $this->id = $id;
         $this->productId = $productId;
         $this->quantity = $quantity;
         $this->unit = $unit;
@@ -37,13 +32,7 @@ class PriceRangeEntity
         $this->bonus = $bonus;
         $this->sortOrder = $sortOrder;
         $this->isDefault = $isDefault;
-        $this->createdAt = $createdAt;
-        $this->updatedAt = $updatedAt;
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
+        $this->validate();
     }
 
     public function getProductId(): int
@@ -51,19 +40,9 @@ class PriceRangeEntity
         return $this->productId;
     }
 
-    public function setProductId(int $productId): void
-    {
-        $this->productId = $productId;
-    }
-
     public function getQuantity(): float
     {
         return $this->quantity;
-    }
-
-    public function setQuantity(float $quantity): void
-    {
-        $this->quantity = $quantity;
     }
 
     public function getUnit(): ?string
@@ -71,19 +50,9 @@ class PriceRangeEntity
         return $this->unit;
     }
 
-    public function setUnit(?string $unit): void
-    {
-        $this->unit = $unit;
-    }
-
     public function getPrice(): float
     {
         return $this->price;
-    }
-
-    public function setPrice(float $price): void
-    {
-        $this->price = $price;
     }
 
     public function getBonus(): ?string
@@ -91,19 +60,9 @@ class PriceRangeEntity
         return $this->bonus;
     }
 
-    public function setBonus(?string $bonus): void
-    {
-        $this->bonus = $bonus;
-    }
-
     public function getSortOrder(): int
     {
         return $this->sortOrder;
-    }
-
-    public function setSortOrder(int $sortOrder): void
-    {
-        $this->sortOrder = $sortOrder;
     }
 
     public function isDefault(): bool
@@ -111,34 +70,30 @@ class PriceRangeEntity
         return $this->isDefault;
     }
 
-    public function setIsDefault(bool $isDefault): void
+    private function validate(): void
     {
-        $this->isDefault = $isDefault;
-    }
-
-    public function getCreatedAt(): ?string
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): ?string
-    {
-        return $this->updatedAt;
+        v::intType()->greaterThan(0)->assert($this->productId);
+        v::floatType()->greaterThan(0)->assert($this->quantity);
+        v::floatType()->greaterThanOrEqual(0)->assert($this->price);
+        if ($this->unit !== null) {
+            v::stringType()->lengthBetween(1, 50)->assert($this->unit);
+        }
+        if ($this->bonus !== null) {
+            v::stringType()->lengthBetween(1, 255)->assert($this->bonus);
+        }
+        v::intType()->greaterThanOrEqual(0)->assert($this->sortOrder);
     }
 
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
             'product_id' => $this->productId,
             'quantity' => $this->quantity,
             'unit' => $this->unit,
             'price' => $this->price,
             'bonus' => $this->bonus,
             'sort_order' => $this->sortOrder,
-            'is_default' => $this->isDefault,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt
+            'is_default' => $this->isDefault
         ];
     }
 }
