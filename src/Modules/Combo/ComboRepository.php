@@ -27,8 +27,8 @@ class ComboRepository
 
         return array_map(fn($row) => new ComboEntity(
             $row['name'],
-            $row['description'],
             (float) $row['price'],
+            $row['description'] ?? null,
             (int) $row['id'],
             $row['created_at'],
             $row['updated_at']
@@ -52,15 +52,15 @@ class ComboRepository
 
         return new ComboEntity(
             $result['name'],
-            $result['description'],
             (float) $result['price'],
+            $result['description'] ?? null,
             (int) $result['id'],
             $result['created_at'],
             $result['updated_at']
         );
     }
 
-    public function create(RegistrarComboDTO $dto): ComboEntity
+    public function create(RegisterComboDTO $dto): ComboEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
         
@@ -76,15 +76,15 @@ class ComboRepository
 
         return new ComboEntity(
             $dto->getName(),
-            $dto->getDescription(),
             $dto->getPrice(),
+            $dto->getDescription(),
             $id,
             $now,
             $now
         );
     }
 
-    public function update(int $id, RegistrarComboDTO $dto): ?ComboEntity
+    public function update(int $id, RegisterComboDTO $dto): ?ComboEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
         

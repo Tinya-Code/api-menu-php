@@ -38,12 +38,12 @@ class ComboController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            $dto = new RegistrarComboDTO(
+            $dto = new RegisterComboDTO(
                 $data['name'],
-                $data['description'],
-                (float) $data['price']
+                (float) $data['price'],
+                $data['description'] ?? null
             );
-            
+
             $combo = $this->service->create($dto);
             return new JsonResponse(['data' => $combo->toArray()], 201);
         } catch (\Exception $e) {
@@ -55,12 +55,12 @@ class ComboController
     {
         try {
             $data = json_decode($request->getContent(), true);
-            $dto = new RegistrarComboDTO(
+            $dto = new RegisterComboDTO(
                 $data['name'],
-                $data['description'],
-                (float) $data['price']
+                (float) $data['price'],
+                $data['description'] ?? null
             );
-            
+
             $combo = $this->service->update($id, $dto);
             
             if ($combo === null) {

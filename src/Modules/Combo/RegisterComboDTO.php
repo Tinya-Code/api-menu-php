@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Modules\Combo;
 
-use Respect\Validation\Validator as v;
+use Respect\Validation\ValidatorBuilder as v;
 
-class RegistrarComboDTO
+class RegisterComboDTO
 {
     private string $name;
-    private string $description;
+    private ?string $description;
     private float $price;
 
-    public function __construct(string $name, string $description, float $price)
+    public function __construct(string $name, float $price, ?string $description = null)
     {
         $this->name = $name;
         $this->description = $description;
@@ -25,7 +25,7 @@ class RegistrarComboDTO
         return $this->name;
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -37,9 +37,11 @@ class RegistrarComboDTO
 
     private function validate(): void
     {
-        v::stringType()->length(1, 255)->assert($this->name);
-        v::stringType()->length(0, 1000)->assert($this->description);
-        v::floatType()->min(0)->assert($this->price);
+        v::stringType()->lengthBetween(1, 255)->assert($this->name);
+        if ($this->description !== null) {
+            v::stringType()->lengthBetween(1, 1000)->assert($this->description);
+        }
+        v::floatType()->greaterThanOrEqual(0)->assert($this->price);
     }
 
     public function toArray(): array
