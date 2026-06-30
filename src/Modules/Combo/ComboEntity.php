@@ -8,15 +8,15 @@ class ComboEntity
 {
     private ?int $id;
     private string $name;
-    private string $description;
+    private ?string $description;
     private float $price;
     private ?string $createdAt;
     private ?string $updatedAt;
 
     public function __construct(
         string $name,
-        string $description,
         float $price,
+        ?string $description = null,
         ?int $id = null,
         ?string $createdAt = null,
         ?string $updatedAt = null
@@ -44,12 +44,12 @@ class ComboEntity
         $this->name = $name;
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): void
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }

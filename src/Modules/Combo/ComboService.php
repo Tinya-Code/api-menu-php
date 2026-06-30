@@ -23,12 +23,12 @@ class ComboService
         return $this->repository->findById($id);
     }
 
-    public function create(RegistrarComboDTO $dto): ComboEntity
+    public function create(RegisterComboDTO $dto): ComboEntity
     {
         return $this->repository->create($dto);
     }
 
-    public function update(int $id, RegistrarComboDTO $dto): ?ComboEntity
+    public function update(int $id, RegisterComboDTO $dto): ?ComboEntity
     {
         return $this->repository->update($id, $dto);
     }
