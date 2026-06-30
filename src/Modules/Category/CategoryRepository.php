@@ -23,7 +23,6 @@ class CategoryRepository
         $result = $qb
             ->select('*')
             ->from('categories')
-            ->orderBy('sort_order', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
 
@@ -31,7 +30,6 @@ class CategoryRepository
             $row['name'],
             $row['description'],
             $row['block_id'],
-            (int) $row['sort_order'],
             $row['id'],
             $row['created_at'],
             $row['updated_at']
@@ -57,7 +55,6 @@ class CategoryRepository
             $result['name'],
             $result['description'],
             $result['block_id'],
-            (int) $result['sort_order'],
             $result['id'],
             $result['created_at'],
             $result['updated_at']
@@ -74,7 +71,6 @@ class CategoryRepository
             'name' => $dto->getName(),
             'description' => $dto->getDescription(),
             'block_id' => $dto->getBlockId(),
-            'sort_order' => $dto->getSortOrder(),
             'created_at' => $now,
             'updated_at' => $now
         ]);
@@ -83,7 +79,6 @@ class CategoryRepository
             $dto->getName(),
             $dto->getDescription(),
             $dto->getBlockId(),
-            $dto->getSortOrder(),
             $id,
             $now,
             $now
@@ -98,7 +93,6 @@ class CategoryRepository
             'name' => $dto->getName(),
             'description' => $dto->getDescription(),
             'block_id' => $dto->getBlockId(),
-            'sort_order' => $dto->getSortOrder(),
             'updated_at' => $now
         ], ['id' => $id]);
 
