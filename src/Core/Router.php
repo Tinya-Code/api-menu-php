@@ -28,6 +28,20 @@ class Router
         self::resource('combo', '/combos', \Modules\Combo\ComboController::class);
         self::resource('gallery', '/gallery', \Modules\Gallery\GalleryController::class);
         self::resource('price_range', '/price-ranges', \Modules\PriceRange\PriceRangeController::class);
+
+        self::$routes->add('price_range_by_product', new Route(
+            path: '/price-ranges/product/{productId}',
+            defaults: ['_controller' => [\Modules\PriceRange\PriceRangeController::class, 'byProduct']],
+            methods: ['GET'],
+            requirements: ['productId' => '\d+'],
+        ));
+        self::$routes->add('price_range_sync', new Route(
+            path: '/price-ranges/product/{productId}/sync',
+            defaults: ['_controller' => [\Modules\PriceRange\PriceRangeController::class, 'sync']],
+            methods: ['PUT'],
+            requirements: ['productId' => '\d+'],
+        ));
+
         self::resource('product', '/products', \Modules\Product\ProductController::class);
         self::resource('product_price', '/product-prices', \Modules\ProductPrice\ProductPriceController::class);
         self::resource('promotion', '/promotions', \Modules\Promotion\PromotionController::class);
