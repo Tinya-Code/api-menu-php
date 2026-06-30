@@ -22,17 +22,12 @@ class PriceRangeRepository
         $result = $qb
             ->select('*')
             ->from('price_ranges')
+            ->orderBy('sort_order', 'ASC')
+            ->addOrderBy('quantity', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
 
-        return array_map(fn($row) => new PriceRangeEntity(
-            $row['name'],
-            (float) $row['min_price'],
-            (float) $row['max_price'],
-            (int) $row['id'],
-            $row['created_at'],
-            $row['updated_at']
-        ), $result);
+        return array_map(fn($row) => $this->mapRow($row), $result);
     }
 
     public function findById(int $id): ?PriceRangeEntity
@@ -50,24 +45,37 @@ class PriceRangeRepository
             return null;
         }
 
-        return new PriceRangeEntity(
-            $result['name'],
-            (float) $result['min_price'],
-            (float) $result['max_price'],
-            (int) $result['id'],
-            $result['created_at'],
-            $result['updated_at']
-        );
+        return $this->mapRow($result);
     }
 
-    public function create(RegistrarPriceRangeDTO $dto): PriceRangeEntity
+    public function findByProductId(int $productId): array
+    {
+        $qb = $this->db->createQueryBuilder();
+        $result = $qb
+            ->select('*')
+            ->from('price_ranges')
+            ->where('product_id = :product_id')
+            ->setParameter('product_id', $productId)
+            ->orderBy('sort_order', 'ASC')
+            ->addOrderBy('quantity', 'ASC')
+            ->executeQuery()
+            ->fetchAllAssociative();
+
+        return array_map(fn($row) => $this->mapRow($row), $result);
+    }
+
+    public function create(RegisterPriceRangeDTO $dto): PriceRangeEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
-        
+
         $this->db->insert('price_ranges', [
-            'name' => $dto->getName(),
-            'min_price' => $dto->getMinPrice(),
-            'max_price' => $dto->getMaxPrice(),
+            'product_id' => $dto->getProductId(),
+            'quantity' => $dto->getQuantity(),
+            'unit' => $dto->getUnit(),
+            'price' => $dto->getPrice(),
+            'bonus' => $dto->getBonus(),
+            'sort_order' => $dto->getSortOrder(),
+            'is_default' => $dto->isDefault() ? 1 : 0,
             'created_at' => $now,
             'updated_at' => $now
         ]);
@@ -75,23 +83,31 @@ class PriceRangeRepository
         $id = (int) $this->db->lastInsertId();
 
         return new PriceRangeEntity(
-            $dto->getName(),
-            $dto->getMinPrice(),
-            $dto->getMaxPrice(),
+            $dto->getProductId(),
+            $dto->getQuantity(),
+            $dto->getPrice(),
+            $dto->getUnit(),
+            $dto->getBonus(),
+            $dto->getSortOrder(),
+            $dto->isDefault(),
             $id,
             $now,
             $now
         );
     }
 
-    public function update(int $id, RegistrarPriceRangeDTO $dto): ?PriceRangeEntity
+    public function update(int $id, RegisterPriceRangeDTO $dto): ?PriceRangeEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
-        
+
         $affectedRows = $this->db->update('price_ranges', [
-            'name' => $dto->getName(),
-            'min_price' => $dto->getMinPrice(),
-            'max_price' => $dto->getMaxPrice(),
+            'product_id' => $dto->getProductId(),
+            'quantity' => $dto->getQuantity(),
+            'unit' => $dto->getUnit(),
+            'price' => $dto->getPrice(),
+            'bonus' => $dto->getBonus(),
+            'sort_order' => $dto->getSortOrder(),
+            'is_default' => $dto->isDefault() ? 1 : 0,
             'updated_at' => $now
         ], ['id' => $id]);
 
@@ -106,5 +122,59 @@ class PriceRangeRepository
     {
         $affectedRows = $this->db->delete('price_ranges', ['id' => $id]);
         return $affectedRows > 0;
+    }
+
+    public function deleteByProductId(int $productId): void
+    {
+        $this->db->delete('price_ranges', ['product_id' => $productId]);
+    }
+
+    public function deleteMultiple(array $ids): void
+    {
+        if (empty($ids)) {
+            return;
+        }
+
+        $this->db->delete('price_ranges', ['id' => $ids]);
+    }
+
+    public function clearDefaultForProduct(int $productId): void
+    {
+        $this->db->update(
+            'price_ranges',
+            ['is_default' => 0],
+            ['product_id' => $productId, 'is_default' => 1]
+        );
+    }
+
+    public function beginTransaction(): void
+    {
+        $this->db->beginTransaction();
+    }
+
+    public function commit(): void
+    {
+        $this->db->commit();
+    }
+
+    public function rollBack(): void
+    {
+        $this->db->rollBack();
+    }
+
+    private function mapRow(array $row): PriceRangeEntity
+    {
+        return new PriceRangeEntity(
+            (int) $row['product_id'],
+            (float) $row['quantity'],
+            (float) $row['price'],
+            $row['unit'] ?: null,
+            $row['bonus'] ?: null,
+            (int) $row['sort_order'],
+            (bool) $row['is_default'],
+            (int) $row['id'],
+            $row['created_at'],
+            $row['updated_at']
+        );
     }
 }

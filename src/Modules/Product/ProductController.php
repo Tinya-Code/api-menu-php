@@ -70,7 +70,8 @@ class ProductController
             );
 
             $prices = $this->parsePrices($data);
-            $product = $this->service->create($dto, $prices);
+            $priceRanges = $this->parsePriceRanges($data);
+            $product = $this->service->create($dto, $prices, $priceRanges);
             return new JsonResponse(['data' => $product->toArray()], 201);
         } catch (\Throwable $e) {
             return new JsonResponse(['error' => $e->getMessage()], 400);
@@ -113,7 +114,8 @@ class ProductController
             );
 
             $prices = $this->parsePrices($data);
-            $product = $this->service->update($id, $dto, $prices);
+            $priceRanges = $this->parsePriceRanges($data);
+            $product = $this->service->update($id, $dto, $prices, $priceRanges);
 
             if ($product === null) {
                 return new JsonResponse(['error' => 'Product not found'], 404);
@@ -186,6 +188,29 @@ class ProductController
         return null;
     }
 
+    private function parsePriceRanges(array $data): ?array
+    {
+        $raw = $data['price_ranges'] ?? null;
+
+        if ($raw === null) {
+            return null;
+        }
+
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+            if (!is_array($decoded)) {
+                throw new \InvalidArgumentException('Invalid JSON in price_ranges field');
+            }
+            return $decoded;
+        }
+
+        if (is_array($raw)) {
+            return $raw;
+        }
+
+        return null;
+    }
+
     private function normalizeFieldNames(array $data): array
     {
         $fieldMap = [
@@ -193,6 +218,7 @@ class ProductController
             'basePrice' => 'price',
             'status' => 'is_active',
             'prices' => 'prices',
+            'priceRanges' => 'price_ranges',
         ];
 
         foreach ($fieldMap as $frontend => $backend) {

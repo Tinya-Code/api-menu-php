@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace Modules\Product;
 
 use Modules\ProductPrice\ProductPriceService;
+use Modules\PriceRange\PriceRangeService;
 
 class ProductService
 {
     private ProductRepository $repository;
     private ProductPriceService $priceService;
+    private PriceRangeService $priceRangeService;
 
     public function __construct()
     {
         $this->repository = new ProductRepository();
         $this->priceService = new ProductPriceService();
+        $this->priceRangeService = new PriceRangeService();
     }
 
     public function getAll(): array
@@ -26,6 +29,9 @@ class ProductService
                     fn($p) => $p->toArray(),
                     $this->priceService->getAll((string) $product->getId())
                 )
+            );
+            $product->setPriceRanges(
+                $this->priceRangeService->getByProductId($product->getId())
             );
         }
         return $products;
@@ -41,11 +47,14 @@ class ProductService
                     $this->priceService->getAll((string) $id)
                 )
             );
+            $product->setPriceRanges(
+                $this->priceRangeService->getByProductId($id)
+            );
         }
         return $product;
     }
 
-    public function create(RegisterProductDTO $dto, ?array $pricesData = null): ProductEntity
+    public function create(RegisterProductDTO $dto, ?array $pricesData = null, ?array $priceRangesData = null): ProductEntity
     {
         $product = $this->repository->create($dto);
 
@@ -53,10 +62,14 @@ class ProductService
             $this->priceService->syncForProduct((string) $product->getId(), $pricesData);
         }
 
+        if ($priceRangesData !== null) {
+            $this->priceRangeService->syncForProduct($product->getId(), $priceRangesData);
+        }
+
         return $this->getById($product->getId());
     }
 
-    public function update(int $id, RegisterProductDTO $dto, ?array $pricesData = null): ?ProductEntity
+    public function update(int $id, RegisterProductDTO $dto, ?array $pricesData = null, ?array $priceRangesData = null): ?ProductEntity
     {
         $product = $this->repository->update($id, $dto);
 
@@ -66,6 +79,10 @@ class ProductService
 
         if ($pricesData !== null) {
             $this->priceService->syncForProduct((string) $id, $pricesData);
+        }
+
+        if ($priceRangesData !== null) {
+            $this->priceRangeService->syncForProduct($id, $priceRangesData);
         }
 
         return $this->getById($id);
