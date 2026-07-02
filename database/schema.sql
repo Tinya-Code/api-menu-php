@@ -37,6 +37,7 @@ CREATE TABLE product_prices (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
+    name VARCHAR(255),
     description VARCHAR(255),
     start_day INT,
     end_day INT,
