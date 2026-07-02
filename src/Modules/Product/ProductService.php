@@ -20,9 +20,13 @@ class ProductService
         $this->priceRangeService = new PriceRangeService();
     }
 
-    public function getAll(): array
+    public function getAll(int $page, int $limit): array
     {
-        $products = $this->repository->findAll();
+        $totalItems = $this->repository->countAll();
+        $totalPages = (int) ceil($totalItems / $limit);
+        $offset = ($page - 1) * $limit;
+
+        $products = $this->repository->findAll($limit, $offset);
         foreach ($products as $product) {
             $product->setPrices(
                 array_map(
@@ -34,7 +38,17 @@ class ProductService
                 $this->priceRangeService->getByProductId($product->getId())
             );
         }
-        return $products;
+
+        return [
+            'data' => array_map(fn($p) => $p->toArray(), $products),
+            'meta' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'total_items' => $totalItems,
+                'has_next' => $page < $totalPages,
+                'has_prev' => $page > 1
+            ]
+        ];
     }
 
     public function getById(int $id): ?ProductEntity
@@ -91,5 +105,25 @@ class ProductService
     public function delete(int $id): bool
     {
         return $this->repository->delete($id);
+    }
+
+    public function getPromotions(int $page, int $limit): array
+    {
+        $totalItems = $this->repository->countPromotions();
+        $totalPages = (int) ceil($totalItems / $limit);
+        $offset = ($page - 1) * $limit;
+
+        $promotions = $this->repository->findPromotions($limit, $offset);
+
+        return [
+            'data' => $promotions,
+            'meta' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'total_items' => $totalItems,
+                'has_next' => $page < $totalPages,
+                'has_prev' => $page > 1
+            ]
+        ];
     }
 }

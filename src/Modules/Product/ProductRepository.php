@@ -16,12 +16,15 @@ class ProductRepository
         $this->db = Database::getConnection();
     }
 
-    public function findAll(): array
+    public function findAll(int $limit, int $offset): array
     {
         $qb = $this->db->createQueryBuilder();
         $result = $qb
             ->select('*')
             ->from('products')
+            ->orderBy('id', 'ASC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
             ->executeQuery()
             ->fetchAllAssociative();
 
@@ -126,5 +129,51 @@ class ProductRepository
     {
         $affectedRows = $this->db->delete('products', ['id' => $id]);
         return $affectedRows > 0;
+    }
+
+    public function findPromotions(int $limit, int $offset): array
+    {
+        $now = (new \DateTime())->format('Y-m-d H:i:s');
+
+        $qb = $this->db->createQueryBuilder();
+        return $qb
+            ->select('pp.id', 'pp.product_id', 'pp.price', 'pp.name', 'pp.description', 'pp.start_day', 'pp.end_day', 'pp.start_datetime', 'pp.end_datetime', 'pp.rule_type', 'p.name AS product_name', 'p.price AS product_price', 'p.image_url AS product_image')
+            ->from('product_prices', 'pp')
+            ->innerJoin('pp', 'products', 'p', 'p.id = pp.product_id')
+            ->where('pp.rule_type = :ruleType')
+            ->andWhere('pp.end_datetime >= :now')
+            ->setParameter('ruleType', 'PROMOTION')
+            ->setParameter('now', $now)
+            ->orderBy('CASE WHEN pp.start_datetime <= :nowOrder THEN 0 ELSE 1 END', 'ASC')
+            ->addOrderBy('pp.start_datetime', 'ASC')
+            ->setParameter('nowOrder', $now)
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
+
+    public function countAll(): int
+    {
+        $qb = $this->db->createQueryBuilder();
+        return (int) $qb
+            ->select('COUNT(*)')
+            ->from('products')
+            ->executeQuery()
+            ->fetchOne();
+    }
+
+    public function countPromotions(): int
+    {
+        $qb = $this->db->createQueryBuilder();
+        return (int) $qb
+            ->select('COUNT(*)')
+            ->from('product_prices', 'pp')
+            ->where('pp.rule_type = :ruleType')
+            ->andWhere('pp.end_datetime >= :now')
+            ->setParameter('ruleType', 'PROMOTION')
+            ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'))
+            ->executeQuery()
+            ->fetchOne();
     }
 }
