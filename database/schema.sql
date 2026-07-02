@@ -3,7 +3,6 @@ CREATE TABLE categories (
     block_id CHAR(36) NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    sort_order INT NOT NULL DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -15,7 +14,6 @@ CREATE TABLE price_ranges (
     unit VARCHAR(50),
     price DECIMAL(10,2) NOT NULL,
     bonus VARCHAR(255),
-    sort_order INT NOT NULL DEFAULT 0,
     is_default TINYINT(1) DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -28,31 +26,31 @@ CREATE TABLE products (
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
     category_id VARCHAR(36),
-    price_range_id INT,
     image_url VARCHAR(500),
     is_active TINYINT(1) DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
-    FOREIGN KEY (price_range_id) REFERENCES price_ranges(id) ON DELETE SET NULL
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 );
 
 CREATE TABLE product_prices (
-    id CHAR(36) PRIMARY KEY,
-    product_id VARCHAR(36) NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     description VARCHAR(255),
     start_day INT,
     end_day INT,
     start_datetime DATETIME,
     end_datetime DATETIME,
-    rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('DAY', 'PROMOTION'))
+    rule_type VARCHAR(50) NOT NULL CHECK (rule_type IN ('DAY', 'PROMOTION')),
+    FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 CREATE TABLE combos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
+    image_url VARCHAR(500) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

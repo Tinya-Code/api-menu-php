@@ -12,7 +12,6 @@ class PriceRangeEntity
     private ?string $unit;
     private float $price;
     private ?string $bonus;
-    private int $sortOrder;
     private bool $isDefault;
     private ?string $createdAt;
     private ?string $updatedAt;
@@ -23,7 +22,6 @@ class PriceRangeEntity
         float $price,
         ?string $unit = null,
         ?string $bonus = null,
-        int $sortOrder = 0,
         bool $isDefault = false,
         ?int $id = null,
         ?string $createdAt = null,
@@ -35,7 +33,6 @@ class PriceRangeEntity
         $this->unit = $unit;
         $this->price = $price;
         $this->bonus = $bonus;
-        $this->sortOrder = $sortOrder;
         $this->isDefault = $isDefault;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
@@ -96,16 +93,6 @@ class PriceRangeEntity
         $this->bonus = $bonus;
     }
 
-    public function getSortOrder(): int
-    {
-        return $this->sortOrder;
-    }
-
-    public function setSortOrder(int $sortOrder): void
-    {
-        $this->sortOrder = $sortOrder;
-    }
-
     public function isDefault(): bool
     {
         return $this->isDefault;
@@ -135,7 +122,6 @@ class PriceRangeEntity
             'unit' => $this->unit,
             'price' => $this->price,
             'bonus' => $this->bonus,
-            'sort_order' => $this->sortOrder,
             'is_default' => $this->isDefault,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt

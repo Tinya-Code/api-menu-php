@@ -10,6 +10,7 @@ class ComboEntity
     private string $name;
     private ?string $description;
     private float $price;
+    private ?string $imageUrl;
     private ?string $createdAt;
     private ?string $updatedAt;
 
@@ -17,6 +18,7 @@ class ComboEntity
         string $name,
         float $price,
         ?string $description = null,
+        ?string $imageUrl = null,
         ?int $id = null,
         ?string $createdAt = null,
         ?string $updatedAt = null
@@ -25,6 +27,7 @@ class ComboEntity
         $this->name = $name;
         $this->description = $description;
         $this->price = $price;
+        $this->imageUrl = $imageUrl;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -64,6 +67,16 @@ class ComboEntity
         $this->price = $price;
     }
 
+    public function getImageUrl(): ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function setImageUrl(?string $imageUrl): void
+    {
+        $this->imageUrl = $imageUrl;
+    }
+
     public function getCreatedAt(): ?string
     {
         return $this->createdAt;
@@ -81,6 +94,7 @@ class ComboEntity
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
+            'image_url' => $this->imageUrl,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt
         ];
