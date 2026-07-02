@@ -22,9 +22,20 @@ class EventController
     public function index(Request $request): JsonResponse
     {
         $page = max(1, (int) ($request->query->get('page', 1)));
-        $perPage = max(1, min(100, (int) ($request->query->get('per_page', 10))));
+        $limit = max(1, min(100, (int) ($request->query->get('limit', 10))));
 
-        $result = $this->service->getAll($page, $perPage);
+        $allowedColumns = ['date', 'name', 'created_at'];
+        $orderBy = $request->query->get('order_by', 'date');
+        if (!in_array($orderBy, $allowedColumns, true)) {
+            $orderBy = 'date';
+        }
+
+        $sortDirection = strtoupper($request->query->get('sortDirection', 'ASC'));
+        if ($sortDirection !== 'ASC' && $sortDirection !== 'DESC') {
+            $sortDirection = 'ASC';
+        }
+
+        $result = $this->service->getAll($page, $limit, $orderBy, $sortDirection);
 
         $data = array_map(fn($event) => $event->toArray(), $result['data']);
 

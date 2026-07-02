@@ -13,9 +13,9 @@ class EventService
         $this->repository = new EventRepository();
     }
 
-    public function getAll(int $page, int $perPage): array
+    public function getAll(int $page, int $limit, string $orderBy, string $sortDirection): array
     {
-        return $this->repository->findAll($page, $perPage);
+        return $this->repository->findAll($page, $limit, $orderBy, $sortDirection);
     }
 
     public function getById(int $id): ?EventEntity

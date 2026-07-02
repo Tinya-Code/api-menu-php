@@ -16,9 +16,9 @@ class EventRepository
         $this->db = Database::getConnection();
     }
 
-    public function findAll(int $page, int $perPage): array
+    public function findAll(int $page, int $limit, string $orderBy, string $sortDirection): array
     {
-        $offset = ($page - 1) * $perPage;
+        $offset = ($page - 1) * $limit;
 
         $countResult = $this->db->createQueryBuilder()
             ->select('COUNT(*) AS total')
@@ -27,7 +27,7 @@ class EventRepository
             ->fetchAssociative();
 
         $total = (int) ($countResult['total'] ?? 0);
-        $lastPage = (int) ceil($total / $perPage);
+        $lastPage = (int) ceil($total / $limit);
 
         if ($lastPage < 1) {
             $lastPage = 1;
@@ -36,9 +36,9 @@ class EventRepository
         $result = $this->db->createQueryBuilder()
             ->select('*')
             ->from('events')
-            ->orderBy('date', 'DESC')
+            ->orderBy($orderBy, $sortDirection)
             ->setFirstResult($offset)
-            ->setMaxResults($perPage)
+            ->setMaxResults($limit)
             ->executeQuery()
             ->fetchAllAssociative();
 
@@ -56,7 +56,7 @@ class EventRepository
             'data' => $data,
             'total' => $total,
             'page' => $page,
-            'per_page' => $perPage,
+            'per_page' => $limit,
             'last_page' => $lastPage
         ];
     }
