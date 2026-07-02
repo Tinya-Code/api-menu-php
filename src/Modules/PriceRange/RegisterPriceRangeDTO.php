@@ -13,7 +13,6 @@ class RegisterPriceRangeDTO
     private ?string $unit;
     private float $price;
     private ?string $bonus;
-    private int $sortOrder;
     private bool $isDefault;
 
     public function __construct(
@@ -22,7 +21,6 @@ class RegisterPriceRangeDTO
         float $price,
         ?string $unit = null,
         ?string $bonus = null,
-        int $sortOrder = 0,
         bool $isDefault = false
     ) {
         $this->productId = $productId;
@@ -30,7 +28,6 @@ class RegisterPriceRangeDTO
         $this->unit = $unit;
         $this->price = $price;
         $this->bonus = $bonus;
-        $this->sortOrder = $sortOrder;
         $this->isDefault = $isDefault;
         $this->validate();
     }
@@ -60,11 +57,6 @@ class RegisterPriceRangeDTO
         return $this->bonus;
     }
 
-    public function getSortOrder(): int
-    {
-        return $this->sortOrder;
-    }
-
     public function isDefault(): bool
     {
         return $this->isDefault;
@@ -81,7 +73,6 @@ class RegisterPriceRangeDTO
         if ($this->bonus !== null) {
             v::stringType()->lengthBetween(1, 255)->assert($this->bonus);
         }
-        v::intType()->greaterThanOrEqual(0)->assert($this->sortOrder);
     }
 
     public function toArray(): array
@@ -92,7 +83,6 @@ class RegisterPriceRangeDTO
             'unit' => $this->unit,
             'price' => $this->price,
             'bonus' => $this->bonus,
-            'sort_order' => $this->sortOrder,
             'is_default' => $this->isDefault
         ];
     }

@@ -22,8 +22,7 @@ class PriceRangeRepository
         $result = $qb
             ->select('*')
             ->from('price_ranges')
-            ->orderBy('sort_order', 'ASC')
-            ->addOrderBy('quantity', 'ASC')
+            ->orderBy('quantity', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
 
@@ -56,8 +55,7 @@ class PriceRangeRepository
             ->from('price_ranges')
             ->where('product_id = :product_id')
             ->setParameter('product_id', $productId)
-            ->orderBy('sort_order', 'ASC')
-            ->addOrderBy('quantity', 'ASC')
+            ->orderBy('quantity', 'ASC')
             ->executeQuery()
             ->fetchAllAssociative();
 
@@ -74,7 +72,6 @@ class PriceRangeRepository
             'unit' => $dto->getUnit(),
             'price' => $dto->getPrice(),
             'bonus' => $dto->getBonus(),
-            'sort_order' => $dto->getSortOrder(),
             'is_default' => $dto->isDefault() ? 1 : 0,
             'created_at' => $now,
             'updated_at' => $now
@@ -88,7 +85,6 @@ class PriceRangeRepository
             $dto->getPrice(),
             $dto->getUnit(),
             $dto->getBonus(),
-            $dto->getSortOrder(),
             $dto->isDefault(),
             $id,
             $now,
@@ -106,7 +102,6 @@ class PriceRangeRepository
             'unit' => $dto->getUnit(),
             'price' => $dto->getPrice(),
             'bonus' => $dto->getBonus(),
-            'sort_order' => $dto->getSortOrder(),
             'is_default' => $dto->isDefault() ? 1 : 0,
             'updated_at' => $now
         ], ['id' => $id]);
@@ -170,7 +165,6 @@ class PriceRangeRepository
             (float) $row['price'],
             $row['unit'] ?: null,
             $row['bonus'] ?: null,
-            (int) $row['sort_order'],
             (bool) $row['is_default'],
             (int) $row['id'],
             $row['created_at'],

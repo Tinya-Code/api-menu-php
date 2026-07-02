@@ -23,6 +23,7 @@ class ProductPriceService
                 $productId,
                 (float) $item['price'],
                 $item['rule_type'],
+                $item['name'] ?? null,
                 $item['description'] ?? null,
                 isset($item['start_day']) ? (int) $item['start_day'] : null,
                 isset($item['end_day']) ? (int) $item['end_day'] : null,

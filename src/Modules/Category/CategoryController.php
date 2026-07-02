@@ -43,8 +43,7 @@ class CategoryController
             $dto = new RegisterCategoryDTO(
                 $data['name'],
                 $data['description'],
-                $data['block_id'],
-                (int) ($data['sort_order'] ?? 0)
+                $data['block_id']
             );
 
             $category = $this->service->create($dto);
@@ -61,8 +60,7 @@ class CategoryController
             $dto = new RegisterCategoryDTO(
                 $data['name'],
                 $data['description'],
-                $data['block_id'],
-                (int) ($data['sort_order'] ?? 0)
+                $data['block_id']
             );
 
             $category = $this->service->update($id, $dto);

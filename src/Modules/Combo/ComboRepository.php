@@ -29,6 +29,7 @@ class ComboRepository
             $row['name'],
             (float) $row['price'],
             $row['description'] ?? null,
+            $row['image_url'] ?? null,
             (int) $row['id'],
             $row['created_at'],
             $row['updated_at']
@@ -54,6 +55,7 @@ class ComboRepository
             $result['name'],
             (float) $result['price'],
             $result['description'] ?? null,
+            $result['image_url'] ?? null,
             (int) $result['id'],
             $result['created_at'],
             $result['updated_at']
@@ -63,11 +65,12 @@ class ComboRepository
     public function create(RegisterComboDTO $dto): ComboEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
-        
+
         $this->db->insert('combos', [
             'name' => $dto->getName(),
             'description' => $dto->getDescription(),
             'price' => $dto->getPrice(),
+            'image_url' => $dto->getImageUrl(),
             'created_at' => $now,
             'updated_at' => $now
         ]);
@@ -78,6 +81,7 @@ class ComboRepository
             $dto->getName(),
             $dto->getPrice(),
             $dto->getDescription(),
+            $dto->getImageUrl(),
             $id,
             $now,
             $now
@@ -87,11 +91,12 @@ class ComboRepository
     public function update(int $id, RegisterComboDTO $dto): ?ComboEntity
     {
         $now = (new \DateTime())->format('Y-m-d H:i:s');
-        
+
         $affectedRows = $this->db->update('combos', [
             'name' => $dto->getName(),
             'description' => $dto->getDescription(),
             'price' => $dto->getPrice(),
+            'image_url' => $dto->getImageUrl(),
             'updated_at' => $now
         ], ['id' => $id]);
 

@@ -52,7 +52,6 @@ class PriceRangeController
                 price: (float) $data['price'],
                 unit: $data['unit'] ?? null,
                 bonus: $data['bonus'] ?? null,
-                sortOrder: (int) ($data['sort_order'] ?? 0),
                 isDefault: filter_var($data['is_default'] ?? false, FILTER_VALIDATE_BOOLEAN)
             );
 
@@ -74,7 +73,6 @@ class PriceRangeController
                 price: (float) $data['price'],
                 unit: $data['unit'] ?? null,
                 bonus: $data['bonus'] ?? null,
-                sortOrder: (int) ($data['sort_order'] ?? 0),
                 isDefault: filter_var($data['is_default'] ?? false, FILTER_VALIDATE_BOOLEAN)
             );
 

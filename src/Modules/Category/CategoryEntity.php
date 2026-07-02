@@ -10,7 +10,6 @@ class CategoryEntity
     private string $name;
     private string $description;
     private string $blockId;
-    private int $sortOrder;
     private ?string $createdAt;
     private ?string $updatedAt;
 
@@ -18,7 +17,6 @@ class CategoryEntity
         string $name,
         string $description,
         string $blockId,
-        int $sortOrder = 0,
         ?string $id = null,
         ?string $createdAt = null,
         ?string $updatedAt = null
@@ -27,7 +25,6 @@ class CategoryEntity
         $this->name = $name;
         $this->description = $description;
         $this->blockId = $blockId;
-        $this->sortOrder = $sortOrder;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -67,16 +64,6 @@ class CategoryEntity
         $this->blockId = $blockId;
     }
 
-    public function getSortOrder(): int
-    {
-        return $this->sortOrder;
-    }
-
-    public function setSortOrder(int $sortOrder): void
-    {
-        $this->sortOrder = $sortOrder;
-    }
-
     public function getCreatedAt(): ?string
     {
         return $this->createdAt;
@@ -94,7 +81,6 @@ class CategoryEntity
             'name' => $this->name,
             'description' => $this->description,
             'block_id' => $this->blockId,
-            'sort_order' => $this->sortOrder,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt
         ];

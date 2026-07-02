@@ -93,7 +93,6 @@ class PriceRangeService
                     price: (float) $item['price'],
                     unit: $item['unit'] ?? null,
                     bonus: $item['bonus'] ?? null,
-                    sortOrder: (int) ($item['sort_order'] ?? 0),
                     isDefault: $isDefault
                 );
 
@@ -114,7 +113,6 @@ class PriceRangeService
                             price: $range->getPrice(),
                             unit: $range->getUnit(),
                             bonus: $range->getBonus(),
-                            sortOrder: $range->getSortOrder(),
                             isDefault: true
                         ));
                     }
