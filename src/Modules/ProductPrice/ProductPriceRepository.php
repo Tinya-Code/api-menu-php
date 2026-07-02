@@ -32,17 +32,7 @@ class ProductPriceRepository
 
         $result = $qb->executeQuery()->fetchAllAssociative();
 
-        return array_map(fn($row) => new ProductPriceEntity(
-            $row['product_id'],
-            (float) $row['price'],
-            $row['rule_type'],
-            $row['description'] ?? null,
-            $row['start_day'] !== null ? (int) $row['start_day'] : null,
-            $row['end_day'] !== null ? (int) $row['end_day'] : null,
-            $row['start_datetime'],
-            $row['end_datetime'],
-            $row['id']
-        ), $result);
+        return array_map(fn($row) => $this->mapRow($row), $result);
     }
 
     public function findById(string $id): ?ProductPriceEntity
@@ -60,17 +50,7 @@ class ProductPriceRepository
             return null;
         }
 
-        return new ProductPriceEntity(
-            $result['product_id'],
-            (float) $result['price'],
-            $result['rule_type'],
-            $result['description'] ?? null,
-            $result['start_day'] !== null ? (int) $result['start_day'] : null,
-            $result['end_day'] !== null ? (int) $result['end_day'] : null,
-            $result['start_datetime'],
-            $result['end_datetime'],
-            $result['id']
-        );
+        return $this->mapRow($result);
     }
 
     public function create(RegisterProductPriceDTO $dto): ProductPriceEntity
@@ -81,7 +61,8 @@ class ProductPriceRepository
             'id' => $id,
             'product_id' => $dto->getProductId(),
             'price' => $dto->getPrice(),
-            'description' => $dto->getName(),
+            'name' => $dto->getName(),
+            'description' => $dto->getDescription(),
             'start_day' => $dto->getStartDay(),
             'end_day' => $dto->getEndDay(),
             'start_datetime' => $dto->getStartDatetime(),
@@ -94,6 +75,7 @@ class ProductPriceRepository
             $dto->getPrice(),
             $dto->getRuleType(),
             $dto->getName(),
+            $dto->getDescription(),
             $dto->getStartDay(),
             $dto->getEndDay(),
             $dto->getStartDatetime(),
@@ -107,7 +89,8 @@ class ProductPriceRepository
         $affectedRows = $this->db->update('product_prices', [
             'product_id' => $dto->getProductId(),
             'price' => $dto->getPrice(),
-            'description' => $dto->getName(),
+            'name' => $dto->getName(),
+            'description' => $dto->getDescription(),
             'start_day' => $dto->getStartDay(),
             'end_day' => $dto->getEndDay(),
             'start_datetime' => $dto->getStartDatetime(),
@@ -131,5 +114,21 @@ class ProductPriceRepository
     {
         $affectedRows = $this->db->delete('product_prices', ['id' => $id]);
         return $affectedRows > 0;
+    }
+
+    private function mapRow(array $row): ProductPriceEntity
+    {
+        return new ProductPriceEntity(
+            $row['product_id'],
+            (float) $row['price'],
+            $row['rule_type'],
+            $row['name'] ?? null,
+            $row['description'] ?? null,
+            $row['start_day'] !== null ? (int) $row['start_day'] : null,
+            $row['end_day'] !== null ? (int) $row['end_day'] : null,
+            $row['start_datetime'],
+            $row['end_datetime'],
+            $row['id']
+        );
     }
 }
