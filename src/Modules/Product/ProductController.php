@@ -19,11 +19,22 @@ class ProductController
         $this->cloudinary = new CloudinaryService();
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $products = $this->service->getAll();
-        $data = array_map(fn($product) => $product->toArray(), $products);
-        return new JsonResponse(['data' => $data]);
+        $page = max(1, (int) $request->query->get('page', '1'));
+        $limit = max(1, min(100, (int) $request->query->get('limit', '10')));
+
+        $result = $this->service->getAll($page, $limit);
+        return new JsonResponse($result);
+    }
+
+    public function promotions(Request $request): JsonResponse
+    {
+        $page = max(1, (int) $request->query->get('page', '1'));
+        $limit = max(1, min(100, (int) $request->query->get('limit', '10')));
+
+        $result = $this->service->getPromotions($page, $limit);
+        return new JsonResponse($result);
     }
 
     public function show(int $id): JsonResponse

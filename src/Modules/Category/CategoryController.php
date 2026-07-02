@@ -16,11 +16,13 @@ class CategoryController
         $this->service = new CategoryService();
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $categories = $this->service->getAll();
-        $data = array_map(fn($category) => $category->toArray(), $categories);
-        return new JsonResponse(['data' => $data]);
+        $page = max(1, (int) $request->query->get('page', '1'));
+        $limit = max(1, min(100, (int) $request->query->get('limit', '10')));
+
+        $result = $this->service->getAll($page, $limit);
+        return new JsonResponse($result);
     }
 
     public function show(string $id): JsonResponse

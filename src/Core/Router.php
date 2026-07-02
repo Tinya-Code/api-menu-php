@@ -42,7 +42,14 @@ class Router
             requirements: ['productId' => '\d+'],
         ));
 
+        self::$routes->add('product_promotions', new Route(
+            path: '/products/promotions',
+            defaults: ['_controller' => [\Modules\Product\ProductController::class, 'promotions']],
+            methods: ['GET'],
+        ));
+
         self::resource('product', '/products', \Modules\Product\ProductController::class);
+
         self::resource('product_price', '/product-prices', \Modules\ProductPrice\ProductPriceController::class);
         self::resource('promotion', '/promotions', \Modules\Promotion\PromotionController::class);
         self::resource('settings', '/settings', \Modules\Settings\SettingsController::class);

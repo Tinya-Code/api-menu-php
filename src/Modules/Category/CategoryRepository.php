@@ -17,12 +17,15 @@ class CategoryRepository
         $this->db = Database::getConnection();
     }
 
-    public function findAll(): array
+    public function findAll(int $limit, int $offset): array
     {
         $qb = $this->db->createQueryBuilder();
         $result = $qb
             ->select('*')
             ->from('categories')
+            ->orderBy('name', 'ASC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
             ->executeQuery()
             ->fetchAllAssociative();
 
@@ -34,6 +37,16 @@ class CategoryRepository
             $row['created_at'],
             $row['updated_at']
         ), $result);
+    }
+
+    public function countAll(): int
+    {
+        $qb = $this->db->createQueryBuilder();
+        return (int) $qb
+            ->select('COUNT(*)')
+            ->from('categories')
+            ->executeQuery()
+            ->fetchOne();
     }
 
     public function findById(string $id): ?CategoryEntity
