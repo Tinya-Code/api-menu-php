@@ -26,6 +26,7 @@ class Router
     {
         self::resource('category', '/categories', \Modules\Category\CategoryController::class);
         self::resource('combo', '/combos', \Modules\Combo\ComboController::class);
+        self::resource('event', '/events', \Modules\Event\EventController::class);
         self::resource('gallery', '/gallery', \Modules\Gallery\GalleryController::class);
         self::resource('price_range', '/price-ranges', \Modules\PriceRange\PriceRangeController::class);
 
